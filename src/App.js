@@ -1,24 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { ThemeProvider, createTheme } from '@mui/material';
+import styled from 'styled-components';
+import Sidebar from './components/Sidebar';
+import NotesList from './components/NotesList';
+import NoteEditor from './components/NoteEditor';
+import { NotesProvider, useNotes } from './context/NotesContext';
+import Tasks from './components/Tasks';
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    background: {
+      default: '#1a1a1a',
+      paper: '#2d2d2d',
+    },
+  },
+});
+
+const AppContainer = styled.div`
+  display: flex;
+  height: 100vh;
+  background-color: #1a1a1a;
+  color: #ffffff;
+`;
+
+function AppContent() {
+  const { state: notesState } = useNotes();
+
+  const renderView = () => {
+    switch (notesState.currentView) {
+      case 'tasks':
+        return <Tasks />;
+      case 'all-notes':
+      default:
+        return <NoteEditor />;
+    }
+  };
+
+  return (
+    <AppContainer>
+      <Sidebar />
+      {renderView()}
+    </AppContainer>
+  );
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={darkTheme}>
+      <NotesProvider>
+        <AppContent />
+      </NotesProvider>
+    </ThemeProvider>
   );
 }
 
